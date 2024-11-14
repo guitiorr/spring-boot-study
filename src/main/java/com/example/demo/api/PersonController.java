@@ -33,7 +33,11 @@ public class PersonController {
         return personService.getAllPeople();
     }
 
-    public Optional<Person> getPersonByID(UUID id){
-        return personService.getPersonByID(id);
+    @GetMapping(path = "{id}")
+    public Person getPersonByID(@PathVariable("id") UUID id){
+        return personService.getPersonByID(id).orElse(null);
     }
+
+
+
 }

@@ -3,6 +3,7 @@ package com.example.demo.dao;
 import com.example.demo.model.Person;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,12 +27,25 @@ public class FakePersonDataAccessService implements PersonDao{
 
     @Override
     public int deletePersonByID(UUID id) {
+        Optional<Person> personMaybe = selectPersonById(id);
+        if(personMaybe.isEmpty()){
+            return 0;
+        }
+        DB.remove(personMaybe.get());
         return 1;
     }
 
     @Override
     public int updatePersonByID(UUID id, Person person) {
-        return 0;
+        return selectPersonById(id)
+                .map(p -> {
+                    int indexOfPersonToUpdate = DB.indexOf(person);
+                    if(indexOfPersonToUpdate >= 0){
+                        DB.set(indexOfPersonToUpdate, person);
+                        return 1;
+                    }
+                    return 0;
+                }).orElse(0);
     }
 
     @Override
